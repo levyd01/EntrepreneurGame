@@ -1,6 +1,7 @@
 package com.example.entrepreneurgame
 
 import android.media.SoundPool
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,8 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -87,6 +91,16 @@ fun entrepreneurEnd (
     isAdditionalMedal = player.addMedal()
     player.terminateActivity()
     navController.navigate("EntrepreneurEnd")
+}
+
+fun backgroundPicture (card : EntrepreneurCard) : Int {
+    return when (card){
+        entrepreneurCardsList[0] -> R.drawable.lemonade_stand
+        entrepreneurCardsList[1] -> R.drawable.insectarium
+        entrepreneurCardsList[2] -> R.drawable.theater
+        entrepreneurCardsList[3] -> R.drawable.novel_writing
+        else -> R.drawable.card_game
+    }
 }
 
 // Front end
@@ -289,14 +303,22 @@ fun EntrepreneurStartPage (
         }
 
         MyHeading(R.string.entrepreneur_activity)
-        Box (
+        Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .background(CartoonBlue, shape = RoundedCornerShape(16.dp))
-                .padding(16.dp)
         ) {
+            // Background image
+            Image(
+                painter = painterResource(id = backgroundPicture(pickedEntrepreneurCard)), // Replace with your image resource
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(16.dp))
+            )
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

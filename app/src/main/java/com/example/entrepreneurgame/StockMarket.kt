@@ -1,6 +1,7 @@
 package com.example.entrepreneurgame
 
 import android.media.SoundPool
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -438,9 +441,17 @@ fun StockMarketPage(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .background(CartoonBlue, shape = RoundedCornerShape(16.dp))
-                .padding(16.dp)
         ) {
+            // Background image
+            Image(
+                painter = painterResource(id = R.drawable.stock_market), // Replace with your image resource
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(16.dp))
+            )
+
             Column(
                 verticalArrangement = Arrangement.Center, // Center content vertically
                 horizontalAlignment = Alignment.CenterHorizontally, // Center content horizontally
@@ -520,7 +531,8 @@ fun StockMarketPage(
                     Text(
                         text = buyNumberOfShares.toString(),
                         fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
                     )
 
                     // "+" Button

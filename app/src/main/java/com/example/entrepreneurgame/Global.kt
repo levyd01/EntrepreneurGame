@@ -399,10 +399,11 @@ fun EndGamePage(
                     fontWeight = FontWeight.Bold
                 )
                 Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly, // Evenly space the buttons
+                    verticalAlignment = Alignment.CenterVertically,  // Align buttons vertically
                     modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(), // Make the row span the full width of the screen
-                    horizontalArrangement = Arrangement.SpaceEvenly // Adjust the spacing between buttons
+                        .fillMaxWidth()
+                        .height(100.dp)
                 ) {
                     MyAnimatedButton(
                         label = R.string.restart,
