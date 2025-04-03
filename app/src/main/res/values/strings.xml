@@ -110,7 +110,7 @@
     <string name="max_days_free_version">Maximum number of days for the free version</string>
     <string name="to_play_more_days_purchase">You can play a game with as many days as you want, if you purchase the unrestricted game version."</string>
     <string name="ok">OK</string>
-    <string name="game_duration">Game duration</string>
+    <string name="game_duration">Game Rounds</string>
     <string name="back">Back</string>
 
 </resources>
