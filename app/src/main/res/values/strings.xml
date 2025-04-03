@@ -32,6 +32,7 @@
     <string name="current_share_value">Current share value: %1$s</string>
     <string name="buy">Buy</string>
     <string name="sell">Sell</string>
+    <string name="shop">Shop</string>
     <string name="number_of_shares_owned">Number of shares owned: %1$s</string>
     <string name="roll_dice_to_select_the_daily_activity">Roll dice to select the daily activity</string>
     <string name="market_crashed">Today the market crashed.</string>
@@ -75,7 +76,7 @@
     <string name="you_earned">You earned %1$s</string>
     <string name="you_acquired_more_experience_for_this_activity">You acquired a medal for this activity.</string>
     <string name="it_will_help_you_earn_more_next_time_you_perform_the_same_activity">It will help you earn more next time you perform the same activity.</string>
-    <string name="you_have_one_medal_for_entrepreneur_activity">You have one Medal for Entrepreneur Activity %1$s.</string>
+    <string name="you_have_one_medal_for_entrepreneur_activity">You have one Medal for Activity %1$s.</string>
     <string name="you_have_medals_for_entrepreneur_activity">You have %1$s Medals for Entrepreneur Activity %2$s.</string>
     <string name="end_of_day">End of day %1$s</string>
     <string name="player_enter_your_name">Player %1$s, enter your name:</string>
@@ -103,5 +104,13 @@
     <string name="social_activity_cost">Social activity. Cost: %1$s</string>
     <string name="buy_shares">Buy shares</string>
     <string name="withdraw_deposit_before_term">Withdraw deposit before term:</string>
+    <string name="days_remaining">%1$s days remaining</string>
+    <string name="unlimited_turns">Unlimited days</string>
+    <string name="purchase">Purchase</string>
+    <string name="max_days_free_version">Maximum number of days for the free version</string>
+    <string name="to_play_more_days_purchase">You can play a game with as many days as you want, if you purchase the unrestricted game version."</string>
+    <string name="ok">OK</string>
+    <string name="game_duration">Game duration</string>
+    <string name="back">Back</string>
 
 </resources>

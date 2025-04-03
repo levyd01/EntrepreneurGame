@@ -4,6 +4,7 @@ import androidx.compose.ui.res.stringResource
 
 const val INIT_CASH = 20
 const val MAX_PLAYERS = 4
+const val SHORT_GAME_LENGTH = 5
 const val TWO_PLAYERS_GAME_LENGTH = 49
 const val MANY_PLAYERS_GAME_LENGTH = 28
 

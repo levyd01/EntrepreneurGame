@@ -129,6 +129,9 @@ fun NavigationGraph(settingsViewModel: SettingsViewModel, navController: NavHost
         composable("AiEndTurn") {
             AiEndTurnPage(settingsViewModel, navController)
         }
+        composable("Shop") {
+            ShopPage(settingsViewModel, navController)
+        }
     }
 }
 

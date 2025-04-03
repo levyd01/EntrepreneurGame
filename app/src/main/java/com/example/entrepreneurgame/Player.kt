@@ -239,7 +239,7 @@ fun nextPlayerOrNextDay(
             }
         }
         PlayerType.NONE -> {
-            if (gameGlobal.getDay() == gameLength){
+            if (gameGlobal.isLastDay()){
                 navController.navigate("EndGame")
             } else {
                 navController.navigate("EndDay")
@@ -640,7 +640,7 @@ fun InsufficientCashPage(
                         soundPool.play(soundId3, 1f, 1f, 1, 0, 1f)
                         insufficientSalesPopUp = false
                     }) {
-                        Text("OK")
+                        Text(stringResource(R.string.ok))
                     }
                 },
                 dismissButton = {
@@ -648,7 +648,7 @@ fun InsufficientCashPage(
                         soundPool.play(soundId3, 1f, 1f, 1, 0, 1f)
                         insufficientSalesPopUp = false
                     }) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             )
@@ -849,7 +849,7 @@ fun EndTurnPage(
                         Text(
                             text = stringResource(
                                 R.string.you_have_one_medal_for_entrepreneur_activity,
-                                i
+                                entrepreneurCardsList[i].symbol
                             ),
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center,

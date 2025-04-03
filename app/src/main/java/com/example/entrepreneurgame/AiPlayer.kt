@@ -83,7 +83,7 @@ fun aiEndTurn(
 fun aiBank(){
     currentAiActivity.entrepreneurState = EntrepreneurState.INACTIVE
     val todayDate = gameGlobal.getDay()
-    val selectLongTerm = ((gameLength - todayDate) > 12)
+    val selectLongTerm = ((gameGlobal.getGameLength() - todayDate) > 12)
     val quantity : Int = maxOf((currentPlayer.getCash() - AI_CASH_RESERVE) / SUM_INIT, 0)
     if (selectLongTerm) {
         currentAiActivity.longDeposit = quantity

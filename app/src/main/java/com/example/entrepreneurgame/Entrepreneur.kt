@@ -42,15 +42,16 @@ data class EntrepreneurCard (
     val id : Int,
     val contentId : Int,
     val initialEarning : Int,
-    val duration : Int
+    val duration : Int,
+    val symbol : String
 )
 
 val entrepreneurCardsList = listOf(
-    EntrepreneurCard(0, R.string.ent_1, 5, 2),
-    EntrepreneurCard(1, R.string.ent_2, 4, 2),
-    EntrepreneurCard(2, R.string.ent_3, 8, 3),
-    EntrepreneurCard(3, R.string.ent_4, 9, 3),
-    EntrepreneurCard(4, R.string.ent_5, 10, 3),
+    EntrepreneurCard(0, R.string.ent_1, 5, 2, "🍋"),
+    EntrepreneurCard(1, R.string.ent_2, 4, 2, "🦋"),
+    EntrepreneurCard(2, R.string.ent_3, 8, 3, "💀"),
+    EntrepreneurCard(3, R.string.ent_4, 9, 3, "📖"),
+    EntrepreneurCard(4, R.string.ent_5, 10, 3, "🃮"),
 )
 
 fun activityState(player: Player) : Int{

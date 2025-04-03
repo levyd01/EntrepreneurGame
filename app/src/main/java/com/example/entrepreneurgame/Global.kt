@@ -100,7 +100,8 @@ class GlobalVars (
     private var humanPlayers : Int,
     private var aiPlayers: Int,
     private var currentDay : Int,
-    private var stockMarketValue  : Int
+    private var stockMarketValue  : Int,
+    private var gameLength : Int
     ){
 
     fun reset() {
@@ -144,13 +145,30 @@ class GlobalVars (
         return currentDay
     }
 
+    fun getRemainingDays() : Int {
+        return gameLength - currentDay + 1
+    }
+
+    fun setGameLength(newGameLength : Int) {
+        gameLength = newGameLength
+    }
+
+    fun getGameLength() : Int {
+        return gameLength
+    }
+
+    fun isLastDay() : Boolean {
+        return currentDay == gameLength
+    }
+
 }
-var gameLength : Int = TWO_PLAYERS_GAME_LENGTH
+
 var gameGlobal : GlobalVars = GlobalVars(
     1,
     0,
     1,
-    INIT_STOCK_MARKET_VALUE
+    INIT_STOCK_MARKET_VALUE,
+    SHORT_GAME_LENGTH
 )
 
 fun resetGame(navController: NavController){
@@ -214,7 +232,8 @@ fun SettingsPage(
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(), // Make the row span the full width of the screen
-                    horizontalArrangement = Arrangement.SpaceEvenly // Adjust the spacing between buttons
+                    horizontalArrangement = Arrangement.SpaceEvenly, // Adjust the spacing between buttons
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(stringResource(R.string.music), modifier = Modifier.weight(1f))
                     LaunchedEffect(Unit) {
@@ -235,7 +254,8 @@ fun SettingsPage(
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(), // Make the row span the full width of the screen
-                    horizontalArrangement = Arrangement.SpaceEvenly // Adjust the spacing between buttons
+                    horizontalArrangement = Arrangement.SpaceEvenly, // Adjust the spacing between buttons
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(stringResource(R.string.sound_effects), modifier = Modifier.weight(1f))
                     Switch(
@@ -252,7 +272,8 @@ fun SettingsPage(
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(), // Make the row span the full width of the screen
-                    horizontalArrangement = Arrangement.SpaceEvenly // Adjust the spacing between buttons
+                    horizontalArrangement = Arrangement.SpaceEvenly, // Adjust the spacing between buttons
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(stringResource(R.string.show_ai_turns), modifier = Modifier.weight(1f))
                     Switch(
@@ -302,6 +323,18 @@ fun EndGamePage(
     val soundId = remember {
         soundPool.load(context, R.raw.next, 1)
     }
+    var hasUnlimitedTurns by remember { mutableStateOf(false) }
+
+    val billingManager = remember {
+        BillingManager(context) { purchased ->
+            hasUnlimitedTurns = purchased
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        billingManager.startConnection()
+    }
+
 
     Column (
         verticalArrangement = Arrangement.SpaceBetween,
@@ -392,12 +425,14 @@ fun EndGamePage(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = stringResource(R.string.you_can_continue_playing_the_game_without_time_limit),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold
-                )
+                if (hasUnlimitedTurns) {
+                    Text(
+                        text = stringResource(R.string.you_can_continue_playing_the_game_without_time_limit),
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly, // Evenly space the buttons
                     verticalAlignment = Alignment.CenterVertically,  // Align buttons vertically
@@ -414,15 +449,17 @@ fun EndGamePage(
                             resetGame(navController)
                         }
                     )
-                    MyAnimatedButton(
-                        label = R.string.continue_play,
-                        onClick = {
-                            if (settingsViewModel.isSoundEnabled) {
-                                soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+                    if (hasUnlimitedTurns) {
+                        MyAnimatedButton(
+                            label = R.string.continue_play,
+                            onClick = {
+                                if (settingsViewModel.isSoundEnabled) {
+                                    soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+                                }
+                                navController.navigate("EndDay")
                             }
-                            navController.navigate("EndDay")
-                        }
-                    )
+                        )
+                    }
                     MyAnimatedButton(
                         label = R.string.exit,
                         onClick = {

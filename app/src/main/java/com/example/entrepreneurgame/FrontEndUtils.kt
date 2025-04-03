@@ -14,9 +14,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -35,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.entrepreneurgame.ui.theme.CartoonGreen
 import com.example.entrepreneurgame.ui.theme.CartoonRed
 import com.example.entrepreneurgame.ui.theme.CartoonTextPrimary
 import kotlinx.coroutines.launch
@@ -134,4 +140,46 @@ fun ClickableSmallImage(
             .clickable { onClick() }, // Handle the click event
         colorFilter = ColorFilter.tint(androidx.compose.ui.graphics.Color.Black) // Optional, for tint
     )
+}
+
+@Composable
+fun PlayerSelector(title: String, count: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = CartoonTextPrimary
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            IconButton(onClick = onDecrease) {
+                Icon(
+                    imageVector = Icons.Default.Remove,
+                    contentDescription = "Decrease",
+                    modifier = Modifier.size(40.dp),
+                    tint = CartoonRed
+                )
+            }
+
+            Text(
+                text = count.toString(),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            IconButton(onClick = onIncrease) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Increase",
+                    modifier = Modifier.size(40.dp),
+                    tint = CartoonGreen
+                )
+            }
+        }
+    }
 }

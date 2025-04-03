@@ -26,6 +26,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -34,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -224,10 +226,23 @@ fun InitPage(
 ) {
     var humanPlayers by remember { mutableStateOf(gameGlobal.getHumanPlayers()) }
     var aiPlayers by remember { mutableStateOf(gameGlobal.getAiPlayers()) }
+    var gameLength by remember { mutableStateOf(gameGlobal.getGameLength()) }
     val context = LocalContext.current
     val soundPool = remember { SoundPool.Builder().setMaxStreams(1).build() }
     val soundId = remember { soundPool.load(context, R.raw.next, 1) }
     val soundId1 = remember { soundPool.load(context, R.raw.click, 1) }
+    var maxDaysReachedPopUp by remember { mutableStateOf(false) }
+    var hasUnlimitedTurns by remember { mutableStateOf(false) }
+
+    val billingManager = remember {
+        BillingManager(context) { purchased ->
+            hasUnlimitedTurns = purchased
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        billingManager.startConnection()
+    }
 
     // Logo Animation (Fade-in and bounce effect)
     val logoAlpha = remember { Animatable(0f) }
@@ -262,7 +277,7 @@ fun InitPage(
             contentScale = ContentScale.Fit // Prevents unnecessary shrinking
         )
 
-        // Player Selection
+        // Game basic Selections
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = CartoonBlue),
@@ -298,7 +313,52 @@ fun InitPage(
                         gameGlobal.setAiPlayers(aiPlayers)
                     }
                 })
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                PlayerSelector(stringResource(R.string.game_duration), gameLength, {
+                    if (gameLength > 1) {
+                        gameLength--
+                        gameGlobal.setGameLength(gameLength)
+                    }
+                }, {
+                    if (hasUnlimitedTurns){
+                        gameLength++
+                        gameGlobal.setGameLength(gameLength)
+                    } else if (gameLength + 1 <= SHORT_GAME_LENGTH) {
+                        gameLength++
+                        gameGlobal.setAiPlayers(aiPlayers)
+                    } else {
+                        maxDaysReachedPopUp = true
+                    }
+                })
             }
+        }
+
+        if (maxDaysReachedPopUp) {
+            AlertDialog(
+                onDismissRequest = {
+                    soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+                    maxDaysReachedPopUp = false },
+                title = { Text(stringResource(R.string.max_days_free_version)) },
+                text = { Text(stringResource(R.string.to_play_more_days_purchase)) },
+                confirmButton = {
+                    Button(onClick = {
+                        soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+                        maxDaysReachedPopUp = false
+                    }) {
+                        Text(stringResource(R.string.purchase))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+                        maxDaysReachedPopUp = false
+                    }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                }
+            )
         }
 
         // Navigation Buttons
@@ -312,6 +372,15 @@ fun InitPage(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            MyAnimatedButton(R.string.shop) {
+                if (settingsViewModel.isSoundEnabled) {
+                    soundPool.play(soundId1, 1f, 1f, 1, 0, 1f)
+                }
+                navController.navigate("Shop")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             MyAnimatedButton(R.string.next) {
                 val totalPlayers = if (settingsViewModel.showAiTurns) {
                     humanPlayers + aiPlayers
@@ -319,7 +388,6 @@ fun InitPage(
                     humanPlayers
                 }
                 soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
-                gameLength = if (totalPlayers > 2) MANY_PLAYERS_GAME_LENGTH else TWO_PLAYERS_GAME_LENGTH
                 createPlayers(humanPlayers, aiPlayers)
                 navController.navigate("PlayerName")
             }
@@ -327,44 +395,3 @@ fun InitPage(
     }
 }
 
-@Composable
-fun PlayerSelector(title: String, count: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = CartoonTextPrimary
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            IconButton(onClick = onDecrease) {
-                Icon(
-                    imageVector = Icons.Default.Remove,
-                    contentDescription = "Decrease",
-                    modifier = Modifier.size(40.dp),
-                    tint = CartoonRed
-                )
-            }
-
-            Text(
-                text = count.toString(),
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            IconButton(onClick = onIncrease) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Increase",
-                    modifier = Modifier.size(40.dp),
-                    tint = CartoonGreen
-                )
-            }
-        }
-    }
-}
