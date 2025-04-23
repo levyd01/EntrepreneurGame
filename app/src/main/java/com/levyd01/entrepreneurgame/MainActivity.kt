@@ -13,16 +13,37 @@ import androidx.navigation.compose.rememberNavController
 import com.levyd01.entrepreneurgame.ui.theme.MyTypography
 
 class MainActivity : ComponentActivity() {
+    private lateinit var billingManager: BillingManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize BillingManager with a callback
+        billingManager = BillingManager(this) { isPurchased ->
+            hasUnlimitedTurns = isPurchased
+        }
+
         setContent {
             MyAppTheme { // Wrap the content with the custom MaterialTheme
                 val navController = rememberNavController()
                 val settingsViewModel: SettingsViewModel = viewModel()
-                NavigationGraph(settingsViewModel, navController)
+                NavigationGraph(settingsViewModel, navController, billingManager)
             }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        // Start connection when activity becomes visible
+        billingManager.startConnection()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Consider ending the connection when activity stops
+        billingManager.endConnection()
+    }
+
 }
 
 @Composable
@@ -36,9 +57,12 @@ fun MyAppTheme(
     )
 }
 
-
 @Composable
-fun NavigationGraph(settingsViewModel: SettingsViewModel, navController: NavHostController) {
+fun NavigationGraph(
+    settingsViewModel: SettingsViewModel,
+    navController: NavHostController,
+    billingManager: BillingManager
+    ) {
     NavHost(navController = navController, startDestination = "Init") {
         composable("Init") {
             InitPage(settingsViewModel, navController)
@@ -104,7 +128,11 @@ fun NavigationGraph(settingsViewModel: SettingsViewModel, navController: NavHost
             AiEndTurnPage(settingsViewModel, navController)
         }
         composable("Shop") {
-            ShopPage(settingsViewModel, navController)
+            ShopPage(
+                settingsViewModel,
+                navController,
+                billingManager
+            )
         }
     }
 }

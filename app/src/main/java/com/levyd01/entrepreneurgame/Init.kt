@@ -89,6 +89,7 @@ fun nextPlayerName() : Boolean {
     }
 }
 
+var hasUnlimitedTurns = false
 
 // Front end
 
@@ -212,17 +213,6 @@ fun InitPage(
     val soundId = remember { soundPool.load(context, R.raw.next, 1) }
     val soundId1 = remember { soundPool.load(context, R.raw.click, 1) }
     var maxDaysReachedPopUp by remember { mutableStateOf(false) }
-    var hasUnlimitedTurns by remember { mutableStateOf(false) }
-
-    val billingManager = remember {
-        BillingManager(context) { purchased ->
-            hasUnlimitedTurns = purchased
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        billingManager.startConnection()
-    }
 
     // Logo Animation (Fade-in and bounce effect)
     val logoAlpha = remember { Animatable(0f) }

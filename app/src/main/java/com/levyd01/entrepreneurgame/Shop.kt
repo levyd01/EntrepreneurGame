@@ -15,8 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,10 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.levyd01.entrepreneurgame.ui.theme.CartoonLightBackground
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-
+import kotlinx.coroutines.launch
 
 
 // Front end
@@ -35,23 +37,32 @@ import androidx.compose.runtime.setValue
 fun ShopPage (
     settingsViewModel : SettingsViewModel,
     navController: NavController,
+    billingManager: BillingManager,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val soundPool = remember { SoundPool.Builder().setMaxStreams(1).build() }
     val soundId = remember {
         soundPool.load(context, R.raw.click, 1)
     }
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     var hasUnlimitedTurns by remember { mutableStateOf(false) }
 
-    val billingManager = remember {
-        BillingManager(context) { purchased ->
+    // Initialize billing connection
+    LaunchedEffect(billingManager) {
+        billingManager.onPurchaseUpdated = { purchased ->
             hasUnlimitedTurns = purchased
         }
+        billingManager.startConnection()
     }
 
-    LaunchedEffect(Unit) {
-        billingManager.startConnection()
+    DisposableEffect(Unit) {
+        onDispose {
+            soundPool.release()
+            billingManager.queryPurchases() // Refresh purchase status
+        }
     }
 
     Column (
@@ -64,6 +75,14 @@ fun ShopPage (
             .fillMaxSize()
     )
     {
+        if (showError) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -106,10 +125,17 @@ fun ShopPage (
                         MyAnimatedButton(
                             label = R.string.purchase,
                             onClick = {
-                                if (settingsViewModel.isSoundEnabled) {
-                                    soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+                                scope.launch {
+                                    try {
+                                        if (settingsViewModel.isSoundEnabled) {
+                                            soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+                                        }
+                                        billingManager.launchPurchaseFlow(context as Activity)
+                                    } catch (e: Exception) {
+                                        errorMessage = "Purchase failed: ${e.localizedMessage}"
+                                        showError = true
+                                    }
                                 }
-                                billingManager.launchPurchaseFlow(context as Activity)
                             }
                         )
                     }
